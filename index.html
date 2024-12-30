@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban da Central de compras</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Kanban de Compras</h1>
+    <button id="dashboard-btn">Dashboard</button>
+    <div id="dashboard" style="display: none;">
+        <h2>Dashboard</h2>
+        <table id="dashboard-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tarefa</th>
+                    <th>Tempo para Conclusão</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button id="close-dashboard">Fechar</button>
+    </div>
+    <div class="board">
+        <div class="column" id="solicitacao">
+            <h2>Não Iniciado</h2>
+            <button class="add-card">+</button>
+        </div>
+        <div class="column" id="aprovacao">
+            <h2>Iniciado</h2>
+            <button class="add-card">+</button>
+        </div>
+        <div class="column" id="processamento">
+            <h2>Em Andamento</h2>
+            <button class="add-card">+</button>
+        </div>
+        <div class="column" id="recebido">
+            <h2>Finalizado</h2>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer>
+        <p>Todos os direitos reservados a <strong>Pabricio Lima</strong></p>
+        <p><a href="https://www.linkedin.com/in/pabrício-lima" target="_blank">Visite meu LinkedIn</a></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

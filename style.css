@@ -1,0 +1,234 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    margin: 20px 0;
+}
+
+#dashboard-btn {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+#dashboard-btn:hover {
+    background-color: #4cae4c;
+}
+
+#dashboard {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+
+#dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#dashboard-table th,
+#dashboard-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#dashboard-table th {
+    background-color: #f0f0f0;
+}
+
+#close-dashboard {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+#close-dashboard:hover {
+    background-color: #c9302c;
+}
+
+.board {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px;
+}
+
+.column {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 18%;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h2 {
+    margin: 0 0 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    width: 100%;
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: move;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    min-height: 100px;
+    /* Define uma altura mínima para uniformidade */
+    height: 100px;
+    /* Define uma altura fixa para todos os cards */
+    width: 100%;
+    /* Garante que os cards ocupem a mesma largura */
+    box-sizing: border-box;
+    /* Inclui padding e border no tamanho total */
+}
+
+span.delete-card {
+    position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: red;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.timer {
+    align-self: flex-end;
+    font-size: 14px;
+    color: #555;
+}
+
+.card-id {
+    font-weight: bold;
+    align-self: flex-start;
+}
+
+.card.nao-iniciado {
+    background-color: #d3d3d3;
+    /* Cinza */
+}
+
+.card.iniciado {
+    background-color: #add8e6;
+    /* Azul */
+}
+
+.card.em-andamento {
+    background-color: #ffff99;
+    /* Amarelo */
+}
+
+.card.finalizado {
+    background-color: #90ee90;
+    /* Verde */
+}
+
+input.editable {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 10px;
+    border: none;
+    outline: none;
+    height: auto;
+    /* Ajusta a altura do input */
+}
+
+button.add-card {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+button.add-card:hover {
+    background-color: #4cae4c;
+}
+
+span.delete-card {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    /* Posiciona a lixeira à esquerda */
+    transform: translateY(-50%);
+    color: red;
+    /* Define a cor vermelha */
+    cursor: pointer;
+    font-size: 18px;
+}
+
+span.delete-card:hover {
+    color: darkred;
+}
+
+.timer {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 14px;
+    color: #555;
+}
+footer {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+    position: relative;
+    margin-top: 20px; /* Espaço entre o conteúdo e o rodapé */
+}
+
+footer a {
+    color: #1e90ff;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
