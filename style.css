@@ -41,7 +41,7 @@ h1, h2 {
 
 /* Containers principais */
 #login-container, #signup-container, #kanban-container {
-    width: 100%;
+    width: 30%;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
