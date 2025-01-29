@@ -132,16 +132,17 @@ function addCard(e) {
     card.className = 'card nao-iniciado';
     card.setAttribute('draggable', 'true');
     card.dataset.id = `task-${taskId}`;
-    card.innerHTML = `
-        <div class="card-header">
+    card.innerHTML = 
+        `<div class="card-header">
             <span>${card.dataset.id}</span>
+            <button class="delete-btn">X</button>
         </div>
         <div class="task-name" contenteditable="true">Digite o nome da tarefa...</div>
-        <div class="timer">00:00:00</div>
-    `;
+        <div class="timer">00:00:00</div>`;
     column.insertBefore(card, column.querySelector('.add-card'));
     card.addEventListener('dragstart', dragStart);
     card.addEventListener('dragend', dragEnd);
+    card.querySelector('.delete-btn').addEventListener('click', () => deleteCard(card));
     trackCard(card);
     taskId++;
 
@@ -159,6 +160,21 @@ function addCard(e) {
             taskName.textContent = "Digite o nome da tarefa...";
         }
     });
+}
+
+function deleteCard(card) {
+    // Confirma a exclusão
+    const confirmDelete = confirm("Você tem certeza que deseja excluir esta tarefa?");
+    if (confirmDelete) {
+        card.remove();
+        // Remover tarefa da lista de completadas, caso já tenha sido completada
+        const taskIndex = completedTasks.findIndex(task => task.id === card.dataset.id);
+        if (taskIndex !== -1) {
+            completedTasks.splice(taskIndex, 1);
+        }
+        // Remover também o timer se existirem
+        stopTimer(card);
+    }
 }
 
 function trackCard(card) {
@@ -216,7 +232,7 @@ function assignAnalyst(card) {
         const analystSpan = document.createElement('span');
         analystSpan.classList.add('analyst-name');
         analystSpan.textContent = selectedAnalyst;
-        card.querySelector('.card-header').append(` - Analista: `, analystSpan);
+        card.querySelector('.card-header').append( ` - Analista: `, analystSpan);
         select.remove();
         confirmButton.remove();
     });
@@ -248,12 +264,11 @@ function updateDashboard() {
 
     completedTasks.forEach((task) => {
         const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${task.id}</td>
+        row.innerHTML = 
+            `<td>${task.id}</td>
             <td>${task.name}</td>
             <td>${task.time}</td>
-            <td>${task.analyst}</td>
-        `;
+            <td>${task.analyst}</td>`;
         tbody.appendChild(row);
 
         // Calculando o total de tempo
