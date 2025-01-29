@@ -111,6 +111,11 @@ function dragDrop(e) {
     this.insertBefore(draggingCard, this.querySelector('.add-card'));
     updateCardColor(draggingCard, this);
 
+    // Inicia o contador apenas se a tarefa for solta na coluna "Iniciado"
+    if (this.id === 'aprovacao' && !timers[draggingCard.dataset.id]) {
+        trackCard(draggingCard);
+    }
+
     if (this.id === 'recebido') {
         stopTimer(draggingCard);
         saveCompletedTask(draggingCard);
@@ -155,7 +160,6 @@ function addCard(e) {
     card.addEventListener('dragstart', dragStart);
     card.addEventListener('dragend', dragEnd);
     card.querySelector('.delete-btn').addEventListener('click', () => deleteCard(card));
-    trackCard(card);
     taskId++;
 
     // Lógica para o comportamento do placeholder
