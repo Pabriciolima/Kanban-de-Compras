@@ -203,7 +203,7 @@ function assignAnalyst(card) {
     }
 
     // Se não existe, cria o botão para selecionar o analista
-    const analystOptions = ['Pabricio', 'Bruno', 'RUY', 'Manoel'];
+    const analystOptions = ['Pabricio', 'Bruno', 'RUY', 'Manoel', 'Ronaldo' , 'Caique', 'Alan', 'Andréa'];
     const select = document.createElement('select');
     select.innerHTML = analystOptions.map(name => `<option value="${name}">${name}</option>`).join('');
 
