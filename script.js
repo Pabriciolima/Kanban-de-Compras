@@ -1,21 +1,61 @@
-// Seleciona colunas e cartões
+// Simulação de armazenamento local para usuários
+const users = [];
+let intervals = {};
+let timers = {};
+let taskId = 1;
+let completedTasks = [];
 const columns = document.querySelectorAll('.column');
-let cards = document.querySelectorAll('.card');
-let intervals = {}; // Gerencia timers
-let taskId = 1; // ID inicial para tarefas
-let completedTasks = []; // Lista de tarefas concluídas
 
-// Adiciona eventos aos cartões existentes
-cards.forEach((card) => {
-    card.dataset.id = `#${String(taskId).padStart(3, '0')}`; // Adiciona ID único
-    taskId++;
-    card.addEventListener('dragstart', dragStart);
-    card.addEventListener('dragend', dragEnd);
-    card.addEventListener('dblclick', editCard);
-    const deleteButton = card.querySelector('.delete-card');
-    deleteButton.addEventListener('click', deleteCard);
-    startTimer(card);
-    updateCardId(card); // Mostra o ID no cartão
+// Alterna para a tela de cadastro
+document.getElementById('signup-btn').addEventListener('click', () => {
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('signup-container').style.display = 'block';
+});
+
+// Evento para processar cadastro
+document.getElementById('signup-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const newUsername = document.getElementById('new-username').value.trim();
+    const newPassword = document.getElementById('new-password').value.trim();
+
+    if (!newUsername || !newPassword) {
+        alert('Preencha todos os campos para se cadastrar.');
+        return;
+    }
+
+    const userExists = users.some((user) => user.username === newUsername);
+
+    if (userExists) {
+        alert('Usuário já existe. Escolha outro nome de usuário.');
+    } else {
+        users.push({ username: newUsername, password: newPassword });
+        alert('Cadastro realizado com sucesso! Você pode fazer login agora.');
+        document.getElementById('signup-container').style.display = 'none';
+        document.getElementById('login-container').style.display = 'block';
+    }
+
+    document.getElementById('signup-form').reset();
+});
+
+// Processa login
+document.getElementById('login-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    const user = users.find((user) => user.username === username && user.password === password);
+
+    if (user) {
+        alert(`Bem-vindo, ${username}!`);
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('kanban-container').style.display = 'block';
+    } else {
+        alert('Login ou senha inválidos. Tente novamente.');
+    }
+
+    document.getElementById('login-form').reset();
 });
 
 // Adiciona eventos às colunas
@@ -28,12 +68,6 @@ columns.forEach((column) => {
     if (addButton) {
         addButton.addEventListener('click', addCard);
     }
-});
-
-// Evento do botão de dashboard
-document.getElementById('dashboard-btn').addEventListener('click', showDashboard);
-document.getElementById('close-dashboard').addEventListener('click', () => {
-    document.getElementById('dashboard').style.display = 'none';
 });
 
 function dragStart() {
@@ -67,10 +101,10 @@ function dragDrop(e) {
     this.insertBefore(draggingCard, this.querySelector('.add-card'));
     updateCardColor(draggingCard, this);
 
-    // Verifica se o cartão foi movido para "Finalizado"
     if (this.id === 'recebido') {
         stopTimer(draggingCard);
         saveCompletedTask(draggingCard);
+        updateDashboard();  // Atualiza o dashboard e o total de tempo
     }
 }
 
@@ -82,6 +116,9 @@ function updateCardColor(card, column) {
         card.classList.add('nao-iniciado');
     } else if (columnId === 'aprovacao') {
         card.classList.add('iniciado');
+        if (!card.querySelector('.analyst-name') && !card.querySelector('select')) {
+            assignAnalyst(card);
+        }
     } else if (columnId === 'processamento') {
         card.classList.add('em-andamento');
     } else if (columnId === 'recebido') {
@@ -94,84 +131,179 @@ function addCard(e) {
     const card = document.createElement('div');
     card.className = 'card nao-iniciado';
     card.setAttribute('draggable', 'true');
-    card.dataset.id = `#${String(taskId).padStart(3, '0')}`;
+    card.dataset.id = `task-${taskId}`;
     card.innerHTML = `
-        <span class="card-id">${card.dataset.id}</span>
-        <span contenteditable="true" class="task-name">Nova Tarefa</span>
-        <span class="delete-card">&times;</span>
+        <div class="card-header">
+            <span>${card.dataset.id}</span>
+        </div>
+        <div class="task-name" contenteditable="true">Digite o nome da tarefa...</div>
         <div class="timer">00:00:00</div>
     `;
     column.insertBefore(card, column.querySelector('.add-card'));
     card.addEventListener('dragstart', dragStart);
     card.addEventListener('dragend', dragEnd);
-    card.addEventListener('dblclick', editCard);
-    const deleteButton = card.querySelector('.delete-card');
-    deleteButton.addEventListener('click', deleteCard);
-    startTimer(card);
+    trackCard(card);
     taskId++;
+
+    // Lógica para o comportamento do placeholder
+    const taskName = card.querySelector('.task-name');
+
+    taskName.addEventListener('focus', () => {
+        if (taskName.textContent === "Digite o nome da tarefa...") {
+            taskName.textContent = "";
+        }
+    });
+
+    taskName.addEventListener('blur', () => {
+        if (taskName.textContent === "") {
+            taskName.textContent = "Digite o nome da tarefa...";
+        }
+    });
 }
 
-function deleteCard(e) {
-    const card = e.target.closest('.card');
-    clearInterval(intervals[card.dataset.id]);
-    delete intervals[card.dataset.id];
-    card.remove();
-}
+function trackCard(card) {
+    let timeElapsed = 0;
+    const timerElement = card.querySelector('.timer');
+    timers[card.dataset.id] = setInterval(() => {
+        timeElapsed++;
+        const hrs = String(Math.floor(timeElapsed / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((timeElapsed % 3600) / 60)).padStart(2, '0');
+        const secs = String(timeElapsed % 60).padStart(2, '0');
+        timerElement.textContent = `${hrs}:${mins}:${secs}`;
 
-function editCard(e) {
-    const card = e.target;
-    const content = card.querySelector('.task-name');
-    content.focus();
-    content.setAttribute("contenteditable", "true");
-    content.classList.add("editing"); // Para diferenciar quando está sendo editado
-}
-
-function startTimer(card) {
-    const timer = card.querySelector('.timer');
-    let seconds = 0;
-    intervals[card.dataset.id] = setInterval(() => {
-        seconds++;
-        const hrs = String(Math.floor(seconds / 3600)).padStart(2, '0');
-        const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-        const secs = String(seconds % 60).padStart(2, '0');
-        timer.textContent = `${hrs}:${mins}:${secs}`;
+        if (timeElapsed === 30) {
+            card.classList.add('warning');
+        } else if (timeElapsed === 60) {
+            card.classList.remove('warning');
+            card.classList.add('alert');
+        }
     }, 1000);
 }
 
 function stopTimer(card) {
-    const timer = card.querySelector('.timer');
-    clearInterval(intervals[card.dataset.id]);
-    delete intervals[card.dataset.id];
-    // Não reseta o tempo, apenas para a contagem
-}
-
-function updateCardId(card) {
-    const idSpan = card.querySelector('.card-id');
-    idSpan.textContent = card.dataset.id;
-}
-
-function showDashboard() {
-    const dashboard = document.getElementById('dashboard');
-    const tbody = dashboard.querySelector('tbody');
-    tbody.innerHTML = '';
-    completedTasks.forEach((task) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${task.id}</td>
-            <td>${task.name}</td>
-            <td>${task.time}</td>
-        `;
-        tbody.appendChild(row);
-    });
-    dashboard.style.display = 'block';
+    clearInterval(timers[card.dataset.id]);
+    delete timers[card.dataset.id];
 }
 
 function saveCompletedTask(card) {
     const task = {
         id: card.dataset.id,
         name: card.querySelector('.task-name').textContent,
-        time: card.querySelector('.timer').textContent, // Mantém o tempo final
+        time: card.querySelector('.timer').textContent,
+        analyst: card.querySelector('.analyst-name') ? card.querySelector('.analyst-name').textContent : 'Não atribuído', // Obtém o nome do analista
     };
-
     completedTasks.push(task);
 }
+
+function assignAnalyst(card) {
+    // Verificar se já existe um analista atribuído
+    const existingAnalyst = card.querySelector('.analyst-name');
+    if (existingAnalyst) {
+        return; // Se já existe, não faz nada
+    }
+
+    // Se não existe, cria o botão para selecionar o analista
+    const analystOptions = ['Pabricio', 'Bruno', 'RUY', 'Manoel'];
+    const select = document.createElement('select');
+    select.innerHTML = analystOptions.map(name => `<option value="${name}">${name}</option>`).join('');
+
+    const confirmButton = document.createElement('button');
+    confirmButton.textContent = 'Confirmar';
+    confirmButton.classList.add('confirm');
+    confirmButton.addEventListener('click', () => {
+        const selectedAnalyst = select.value;
+        alert(`Analista ${selectedAnalyst} atribuído à tarefa ${card.dataset.id}`);
+        const analystSpan = document.createElement('span');
+        analystSpan.classList.add('analyst-name');
+        analystSpan.textContent = selectedAnalyst;
+        card.querySelector('.card-header').append(` - Analista: `, analystSpan);
+        select.remove();
+        confirmButton.remove();
+    });
+
+    // Adiciona o botão de selecionar analista ao card
+    const selectButton = document.createElement('button');
+    selectButton.textContent = 'Selecionar Analista';
+    selectButton.classList.add('select-analyst');
+    selectButton.addEventListener('click', () => {
+        card.appendChild(select);
+        card.appendChild(confirmButton);
+        selectButton.remove(); // Remove o botão após clicar
+    });
+
+    card.querySelector('.card-header').appendChild(selectButton);
+}
+
+// Adicionar evento para abrir o dashboard
+document.getElementById('dashboard-btn').addEventListener('click', () => {
+    updateDashboard();
+});
+
+function updateDashboard() {
+    const dashboard = document.getElementById('dashboard');
+    const tbody = dashboard.querySelector('tbody');
+    const totalTimeElement = document.getElementById('total-time');
+    tbody.innerHTML = '';
+    let totalTimeInSeconds = 0;
+
+    completedTasks.forEach((task) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${task.id}</td>
+            <td>${task.name}</td>
+            <td>${task.time}</td>
+            <td>${task.analyst}</td>
+        `;
+        tbody.appendChild(row);
+
+        // Calculando o total de tempo
+        const timeParts = task.time.split(':').map(part => parseInt(part));
+        const totalSecondsForTask = timeParts[0] * 3600 + timeParts[1] * 60 + timeParts[2];
+        totalTimeInSeconds += totalSecondsForTask;
+    });
+
+    // Exibe o total de tempo
+    const hrs = String(Math.floor(totalTimeInSeconds / 3600)).padStart(2, '0');
+    const mins = String(Math.floor((totalTimeInSeconds % 3600) / 60)).padStart(2, '0');
+    const secs = String(totalTimeInSeconds % 60).padStart(2, '0');
+    totalTimeElement.textContent = `Total de Tempo: ${hrs}:${mins}:${secs}`;
+
+    dashboard.style.display = 'block';
+}
+
+// Fechar o dashboard
+document.getElementById('close-dashboard').addEventListener('click', () => {
+    document.getElementById('dashboard').style.display = 'none';
+});
+
+// Geração do PDF
+document.getElementById('generate-pdf').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('Relatório de Tarefas Concluídas', 14, 10);
+
+    const table = document.querySelector('#dashboard-table tbody');
+    const rows = Array.from(table.rows);
+    const data = rows.map(row => {
+        const cells = Array.from(row.cells);
+        return cells.map(cell => cell.textContent);
+    });
+
+    const head = [['ID', 'Tarefa', 'Tempo', 'Analista']];
+    doc.autoTable({
+        head: head,
+        body: data,
+        startY: 20,
+        theme: 'grid',
+    });
+
+    doc.save('relatorio_tarefas_concluidas.pdf');
+});
+
+// Geração do Excel
+document.getElementById('generate-excel').addEventListener('click', () => {
+    const table = document.querySelector('#dashboard-table');
+    const wb = XLSX.utils.table_to_book(table, { sheet: "Tarefas Concluídas" });
+    XLSX.writeFile(wb, 'relatorio_tarefas_concluidas.xlsx');
+});
