@@ -1,9 +1,10 @@
 // Simulação de armazenamento local para usuários
-const users = [];
+let users = JSON.parse(localStorage.getItem('users')) || [];
 let intervals = {};
 let timers = {};
 let taskId = 1;
-let completedTasks = [];
+let completedTasks = JSON.parse(localStorage.getItem('completedTasks')) || [];
+let cards = JSON.parse(localStorage.getItem('cards')) || [];
 const columns = document.querySelectorAll('.column');
 
 // Alterna para a tela de cadastro
@@ -30,6 +31,7 @@ document.getElementById('signup-form').addEventListener('submit', (e) => {
         alert('Usuário já existe. Escolha outro nome de usuário.');
     } else {
         users.push({ username: newUsername, password: newPassword });
+        localStorage.setItem('users', JSON.stringify(users)); // Salva usuários no localStorage
         alert('Cadastro realizado com sucesso! Você pode fazer login agora.');
         document.getElementById('signup-container').style.display = 'none';
         document.getElementById('login-container').style.display = 'block';
@@ -49,6 +51,7 @@ document.getElementById('login-form').addEventListener('submit', (e) => {
 
     if (user) {
         alert(`Bem-vindo, ${username}!`);
+        localStorage.setItem('loggedInUser', username); // Salva o usuário logado no localStorage
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('kanban-container').style.display = 'block';
     } else {
@@ -57,6 +60,13 @@ document.getElementById('login-form').addEventListener('submit', (e) => {
 
     document.getElementById('login-form').reset();
 });
+
+// Verificar se o usuário está logado ao carregar a página
+const loggedInUser = localStorage.getItem('loggedInUser');
+if (loggedInUser) {
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('kanban-container').style.display = 'block';
+}
 
 // Adiciona eventos às colunas
 columns.forEach((column) => {
@@ -106,6 +116,8 @@ function dragDrop(e) {
         saveCompletedTask(draggingCard);
         updateDashboard();  // Atualiza o dashboard e o total de tempo
     }
+
+    saveCardsToLocalStorage(); // Salva as alterações de cards no localStorage
 }
 
 function updateCardColor(card, column) {
@@ -160,6 +172,8 @@ function addCard(e) {
             taskName.textContent = "Digite o nome da tarefa...";
         }
     });
+
+    saveCardsToLocalStorage(); // Salva os cards no localStorage sempre que um novo for adicionado
 }
 
 function deleteCard(card) {
@@ -174,6 +188,8 @@ function deleteCard(card) {
         }
         // Remover também o timer se existirem
         stopTimer(card);
+        saveCardsToLocalStorage(); // Salva as alterações dos cards no localStorage
+        localStorage.setItem('completedTasks', JSON.stringify(completedTasks)); // Atualiza o localStorage
     }
 }
 
@@ -209,6 +225,7 @@ function saveCompletedTask(card) {
         analyst: card.querySelector('.analyst-name') ? card.querySelector('.analyst-name').textContent : 'Não atribuído', // Obtém o nome do analista
     };
     completedTasks.push(task);
+    localStorage.setItem('completedTasks', JSON.stringify(completedTasks)); // Salva tarefas no localStorage
 }
 
 function assignAnalyst(card) {
@@ -235,6 +252,7 @@ function assignAnalyst(card) {
         card.querySelector('.card-header').append( ` - Analista: `, analystSpan);
         select.remove();
         confirmButton.remove();
+        saveCardsToLocalStorage(); // Salva os cards no localStorage após atribuição do analista
     });
 
     // Adiciona o botão de selecionar analista ao card
@@ -248,6 +266,19 @@ function assignAnalyst(card) {
     });
 
     card.querySelector('.card-header').appendChild(selectButton);
+}
+
+// Função para salvar os cartões no localStorage
+function saveCardsToLocalStorage() {
+    const allCards = document.querySelectorAll('.card');
+    cards = Array.from(allCards).map(card => ({
+        id: card.dataset.id,
+        name: card.querySelector('.task-name').textContent,
+        time: card.querySelector('.timer').textContent,
+        column: card.closest('.column').id,
+        analyst: card.querySelector('.analyst-name') ? card.querySelector('.analyst-name').textContent : null,
+    }));
+    localStorage.setItem('cards', JSON.stringify(cards));
 }
 
 // Adicionar evento para abrir o dashboard
@@ -320,5 +351,5 @@ document.getElementById('generate-pdf').addEventListener('click', () => {
 document.getElementById('generate-excel').addEventListener('click', () => {
     const table = document.querySelector('#dashboard-table');
     const wb = XLSX.utils.table_to_book(table, { sheet: "Tarefas Concluídas" });
-    XLSX.writeFile(wb, 'relatorio_tarefas_concluidas.xlsx');
+    XLSX.writeFile(wb, 'relatorio_tarefas_concluídas.xlsx');
 });
