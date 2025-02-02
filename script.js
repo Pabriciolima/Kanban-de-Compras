@@ -2,7 +2,7 @@
 let users = JSON.parse(localStorage.getItem('users')) || [];
 let intervals = {};
 let timers = {};
-let taskId = 1;
+let taskId = localStorage.getItem('taskId') ? parseInt(localStorage.getItem('taskId')) : 1; // Recupera o taskId ou começa de 1
 let completedTasks = JSON.parse(localStorage.getItem('completedTasks')) || [];
 let cards = JSON.parse(localStorage.getItem('cards')) || [];
 const columns = document.querySelectorAll('.column');
@@ -108,6 +108,19 @@ function dragDrop(e) {
     e.preventDefault();
     this.classList.remove('hovered');
     const draggingCard = document.querySelector('.dragging');
+    
+    // Verifica se o card tem um nome de tarefa e se o nome não é o texto padrão
+    const taskName = draggingCard.querySelector('.task-name').textContent.trim();
+    if (!taskName || taskName === "Digite o nome da tarefa...") {
+        alert("Por favor, escreva o nome da tarefa antes de mover o card.");
+        return; // Impede o movimento do card se a tarefa não for escrita
+    }
+
+    // Não impede o movimento para a coluna de "Iniciado" (aprovacao) até o analista ser atribuído
+    if (this.id === 'aprovacao' && !draggingCard.querySelector('.analyst-name')) {
+        alert("Você pode mover o card para Iniciado, mas precisa atribuir um analista.");
+    }
+
     this.insertBefore(draggingCard, this.querySelector('.add-card'));
     updateCardColor(draggingCard, this);
 
@@ -119,7 +132,6 @@ function dragDrop(e) {
     if (this.id === 'recebido') {
         stopTimer(draggingCard);
         saveCompletedTask(draggingCard);
-        updateDashboard();  // Atualiza o dashboard e o total de tempo
     }
 
     saveCardsToLocalStorage(); // Salva as alterações de cards no localStorage
@@ -133,6 +145,7 @@ function updateCardColor(card, column) {
         card.classList.add('nao-iniciado');
     } else if (columnId === 'aprovacao') {
         card.classList.add('iniciado');
+        // Verificar se já existe um analista atribuído antes de chamar a função
         if (!card.querySelector('.analyst-name') && !card.querySelector('select')) {
             assignAnalyst(card);
         }
@@ -160,7 +173,9 @@ function addCard(e) {
     card.addEventListener('dragstart', dragStart);
     card.addEventListener('dragend', dragEnd);
     card.querySelector('.delete-btn').addEventListener('click', () => deleteCard(card));
-    taskId++;
+    
+    taskId++; // Incrementa o taskId após adicionar um novo card
+    localStorage.setItem('taskId', taskId); // Salva o novo taskId no localStorage
 
     // Lógica para o comportamento do placeholder
     const taskName = card.querySelector('.task-name');
@@ -236,7 +251,7 @@ function assignAnalyst(card) {
     // Verificar se já existe um analista atribuído
     const existingAnalyst = card.querySelector('.analyst-name');
     if (existingAnalyst) {
-        return; // Se já existe, não faz nada
+        return; // Se já existe um analista atribuído, não faz nada
     }
 
     // Se não existe, cria o botão para selecionar o analista
@@ -303,13 +318,19 @@ function updateDashboard() {
             `<td>${task.id}</td>
             <td>${task.name}</td>
             <td>${task.time}</td>
-            <td>${task.analyst}</td>`;
+            <td>${task.analyst}</td>
+            <td><button class="delete-task-btn">Excluir</button></td>`; // Botão de exclusão
         tbody.appendChild(row);
 
         // Calculando o total de tempo
         const timeParts = task.time.split(':').map(part => parseInt(part));
         const totalSecondsForTask = timeParts[0] * 3600 + timeParts[1] * 60 + timeParts[2];
         totalTimeInSeconds += totalSecondsForTask;
+
+        // Ação de excluir tarefa ao clicar no botão
+        row.querySelector('.delete-task-btn').addEventListener('click', () => {
+            deleteTaskFromReport(task.id);
+        });
     });
 
     // Exibe o total de tempo
@@ -357,3 +378,13 @@ document.getElementById('generate-excel').addEventListener('click', () => {
     const wb = XLSX.utils.table_to_book(table, { sheet: "Tarefas Concluídas" });
     XLSX.writeFile(wb, 'relatorio_tarefas_concluídas.xlsx');
 });
+
+// Função para atualizar a tabela ao excluir tarefa
+function deleteTaskFromReport(taskId) {
+    const taskIndex = completedTasks.findIndex(task => task.id === taskId);
+    if (taskIndex !== -1) {
+        completedTasks.splice(taskIndex, 1); // Remove a tarefa do array de tarefas completadas
+        localStorage.setItem('completedTasks', JSON.stringify(completedTasks)); // Atualiza o localStorage
+        updateDashboard(); // Atualiza o dashboard com as tarefas restantes
+    }
+}
