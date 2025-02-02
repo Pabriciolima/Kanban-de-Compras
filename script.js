@@ -326,6 +326,7 @@ function updateDashboard() {
             </button>
         </td>
     `;
+   
     tbody.appendChild(row);
     
 
