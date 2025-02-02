@@ -302,18 +302,82 @@ button.select-analyst:hover {
 
 /* Media Queries para dispositivos móveis */
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+        justify-content: flex-start;
+    }
+
+    /* Containers principais */
     #login-container, #signup-container, #kanban-container {
+        padding: 20px;
+        margin: 10px 0;
+        width: 100%;
+        max-width: 100%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Formulários */
+    form {
+        gap: 10px;
+    }
+
+    input[type="text"], input[type="password"] {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* Botões */
+    button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    button[type="submit"], button[type="button"], button.confirm, button.select-analyst {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    /* Dashboard e Tabelas */
+    #dashboard {
         padding: 15px;
     }
 
+    #dashboard-table th, #dashboard-table td {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    /* Kanban */
     .board {
         flex-direction: column;
-        gap: 20px;
+        gap: 15px;
     }
 
     .column {
         width: 100%;
         min-width: unset;
+        padding: 10px;
+    }
+
+    .column h2 {
+        font-size: 16px;
+        padding: 8px;
+    }
+
+    .card {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .add-card {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    /* Área de Analistas */
+    #analysts-container {
+        gap: 10px;
     }
 
     .analyst-photo {
@@ -321,31 +385,38 @@ button.select-analyst:hover {
         height: 50px;
     }
 
+    /* Estilo para o Total de Tempo */
     #total-time {
         font-size: 16px;
         padding: 10px;
+        margin-top: 15px;
     }
 
+    /* Botões de exportação */
     #generate-pdf, #generate-excel {
         width: 100%;
         padding: 10px;
         font-size: 14px;
+        margin-bottom: 10px;
     }
 
-    .add-card {
-        width: 50px;
-        height: 50px;
-        font-size: 25px;
+    /* Botão de alternância de modo escuro */
+    .dark-mode-toggle {
+        bottom: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
     }
 }
 
 @media (max-width: 480px) {
     h1, h2 {
-        font-size: 20px;
+        font-size: 18px;
     }
 
     .card, .column {
-        padding: 8px;
+        padding: 6px;
     }
 
     #total-time {
@@ -354,8 +425,19 @@ button.select-analyst:hover {
     }
 
     button {
-        font-size: 14px;
-        padding: 10px;
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .analyst-photo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .add-card {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
     }
 }
 
