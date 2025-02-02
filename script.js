@@ -116,9 +116,9 @@ function dragDrop(e) {
         return; // Impede o movimento do card se a tarefa não for escrita
     }
 
-    // Não impede o movimento para a coluna de "Iniciado" (aprovacao) até o analista ser atribuído
+    // Agora permite mover o card para a coluna de "Iniciado" sem exigir analista
     if (this.id === 'aprovacao' && !draggingCard.querySelector('.analyst-name')) {
-        alert("Você pode mover o card para Iniciado, mas precisa atribuir um analista.");
+        // Se o card não tem analista, apenas move sem impedir
     }
 
     this.insertBefore(draggingCard, this.querySelector('.add-card'));
