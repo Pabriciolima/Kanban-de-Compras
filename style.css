@@ -48,7 +48,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 button {
     padding: 12px;
     border: none;
-    border-radius: 5px;
+    border-radius: 70px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s, color 0.3s;
@@ -78,6 +78,7 @@ button.confirm {
     background-color: #4CAF50;
     color: white;
     width: 100%;
+    margin-top: 10px;
     padding: 12px;
     border-radius: 5px;
 }
@@ -90,10 +91,11 @@ button.confirm:hover {
 button.select-analyst {
     background-color: #f0ad4e;
     color: white;
-    width: 100%;
+    width: 50%;
     padding: 12px;
     border-radius: 5px;
     font-weight: bold;
+    margin-top: 10px;
     margin-bottom: 10px;
     transition: background-color 0.3s, transform 0.3s;
 }
@@ -245,7 +247,7 @@ button.select-analyst:hover {
     font-size: 18px;
     font-weight: bold;
     color: #333;
-    background-color: #f1f1f1;
+    background-color: #09ffde;
     padding: 15px;
     border-radius: 8px;
     display: inline-block;
@@ -254,16 +256,12 @@ button.select-analyst:hover {
     transition: all 0.3s ease-in-out;
 }
 
-#total-time:hover {
-    background-color: #007BFF;
-    color: #fff;
-    cursor: pointer;
-    transform: scale(1.05);
-}
+
 
 /* Estilos para os botões de exportação */
 #generate-pdf {
-    background-color: #007BFF;
+    margin: 10px;
+    background-color: #ff0000;
     color: white;
     padding: 12px;
     border-radius: 5px;
@@ -276,13 +274,14 @@ button.select-analyst:hover {
 }
 
 #generate-pdf:hover {
-    background-color: #FF0000;
+    background-color: #c20a0a;
     color: white;
     transform: scale(1.05);
 }
 
 #generate-excel {
-    background-color: #28A745;
+    margin: 10px;
+    background-color: #01b92c;
     color: white;
     padding: 12px;
     border-radius: 5px;
@@ -295,7 +294,7 @@ button.select-analyst:hover {
 }
 
 #generate-excel:hover {
-    background-color: #218838;
+    background-color: #00861d;
     color: white;
     transform: scale(1.05);
 }
