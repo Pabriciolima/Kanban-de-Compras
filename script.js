@@ -388,3 +388,46 @@ function deleteTaskFromReport(taskId) {
         updateDashboard(); // Atualiza o dashboard com as tarefas restantes
     }
 }
+// Alternar o modo escuro
+// Alternar o modo escuro
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+darkModeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    document.getElementById('login-container').classList.toggle('dark-mode');
+    document.getElementById('signup-container').classList.toggle('dark-mode');
+    document.getElementById('kanban-container').classList.toggle('dark-mode');
+    document.getElementById('dashboard').classList.toggle('dark-mode');
+    document.querySelectorAll('input[type="text"], input[type="password"], button, .card, .column').forEach((element) => {
+        element.classList.toggle('dark-mode');
+    });
+
+    // Alterna o ícone do botão entre lua e sol
+    const icon = darkModeToggle.querySelector('i');
+    if (document.body.classList.contains('dark-mode')) {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+    } else {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+    }
+
+    // Salvar o estado do modo escuro no localStorage
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+});
+
+// Verificar o estado do modo escuro ao carregar a página
+window.addEventListener('load', () => {
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('login-container').classList.add('dark-mode');
+        document.getElementById('signup-container').classList.add('dark-mode');
+        document.getElementById('kanban-container').classList.add('dark-mode');
+        document.getElementById('dashboard').classList.add('dark-mode');
+        document.querySelectorAll('input[type="text"], input[type="password"], button, .card, .column').forEach((element) => {
+            element.classList.add('dark-mode');
+        });
+        const icon = darkModeToggle.querySelector('i');
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+    }
+});

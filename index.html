@@ -1,103 +1,117 @@
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Kanban da Central de Compras</title>
-        <link rel="stylesheet" href="style.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- Biblioteca jsPDF -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.27/jspdf.plugin.autotable.min.js"></script> <!-- jsPDF com suporte a autoTable -->
-        <!-- SheetJS -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
-        <!-- Font Awesome (para ícones) -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    </head>
-    <body>
-        <!-- Tela de Login -->
-        <div id="login-container">
-            <h1>Login</h1>
-            <form id="login-form">
-                <label for="username">Usuário:</label>
-                <input type="text" id="username" name="username" required>
-                <label for="password">Senha:</label>
-                <input type="password" id="password" name="password" required>
-                <button type="submit">Entrar</button>
-                <button type="button" id="signup-btn">Cadastrar</button>
-            </form>
-        </div>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban da Central de Compras</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- Biblioteca jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.27/jspdf.plugin.autotable.min.js"></script> <!-- jsPDF com suporte a autoTable -->
+    <!-- SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+    <!-- Font Awesome (para ícones) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
-        <!-- Tela de Cadastro -->
-        <div id="signup-container" style="display: none;">
-            <h1>Cadastro</h1>
-            <form id="signup-form">
-                <label for="new-username">Usuário:</label>
-                <input type="text" id="new-username" name="new-username" required>
-                <label for="new-password">Senha:</label>
-                <input type="password" id="new-password" name="new-password" required>
-                <button type="submit">Cadastrar</button>
-            </form>
-        </div>
+    <!-- Adicionando o Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJ1QY7jRDLz1LIOB+NO5Jf+UJt+Q8TxGsxQ1gR4x5mIZQzR6hmEYo0M5M6T9" crossorigin="anonymous">
 
-        <!-- Tela de Kanban -->
-        <div id="kanban-container" style="display: none;">
-            <h1>Kanban de Compras</h1>
-            <button id="dashboard-btn">Dashboard</button>
+    <!-- Adicionando o Popper.js (necessário para alguns componentes interativos) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybNzvCUxex0ZB3yDE7t9GzdkF9lw7s8t4I5f5p3ynSx5zrfJ6T" crossorigin="anonymous"></script>
 
-            <!-- Analistas -->
-            <div id="analysts-container">
-                <h2>Analistas</h2>
-                <div id="analysts-list">
-                    <!-- Fotos dos analistas serão inseridas aqui -->
-                </div>
-            </div>
+    <!-- Adicionando o Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0t7sA9uKp5Gb5r+Yj7y2hD5d3kp0pP2ql+R0p4sbWbFyyEj3" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div id="login-container">
+        <h1>Login</h1>
+        <form id="login-form">
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Senha:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Entrar</button>
+            <button type="button" id="signup-btn">Cadastrar</button>
+        </form>
+    </div>
 
-            <div id="dashboard" style="display: none;">
-                <h2>Dashboard</h2>
-                <table id="dashboard-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tarefa</th>
-                            <th>Tempo para Conclusão</th>
-                            <th>Analista</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Dados dinâmicos -->
-                    </tbody>
-                </table>
-                <div id="total-time" style="margin-top: 10px;">Total de Tempo: 00:00:00</div> <!-- Exibição do Total de Tempo -->
-                <button id="close-dashboard">Fechar</button>
-                <!-- Botões de Exportação -->
-                <button id="generate-pdf" class="btn btn-primary">
-                    <i class="fas fa-file-pdf"></i> Gerar Relatório em PDF
-                </button>
-                <button id="generate-excel" class="btn btn-success">
-                    <i class="fas fa-table"></i> Gerar Excel
-                </button>
-            </div>
+    <!-- Tela de Cadastro -->
+    <div id="signup-container" style="display: none;">
+        <h1>Cadastro</h1>
+        <form id="signup-form">
+            <label for="new-username">Usuário:</label>
+            <input type="text" id="new-username" name="new-username" required>
+            <label for="new-password">Senha:</label>
+            <input type="password" id="new-password" name="new-password" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+    </div>
 
-            <!-- Colunas do Kanban -->
-            <div class="board">
-                <div class="column" id="solicitacao">
-                    <h2>Não Iniciado</h2>
-                    <button class="add-card">+</button>
-                </div>
-                <div class="column" id="aprovacao">
-                    <h2>Iniciado</h2>
-                    <button class="add-card">+</button>
-                </div>
-                <div class="column" id="processamento">
-                    <h2>Em Andamento</h2>
-                    <button class="add-card">+</button>
-                </div>
-                <div class="column" id="recebido">
-                    <h2>Finalizado</h2>
-                    <button class="add-card">+</button>
-                </div>
-            </div>
-        </div>
+    <!-- Tela de Kanban -->
+    <div id="kanban-container" style="display: none;">
+        <h1>Kanban de Compras</h1>
+        <button id="dashboard-btn">Dashboard</button>
         
-        <script src="script.js" defer></script>
-    </body>
-    </html>
+        <!-- Botão de Alternância de Modo Escuro -->
+        <button id="dark-mode-toggle" class="dark-mode-toggle">
+            <i class="fas fa-moon"></i>
+        </button>
+        
+        <!-- Analistas -->
+        <div id="analysts-container">
+            <h2>Analistas</h2>
+            <div id="analysts-list">
+                <!-- Fotos dos analistas serão inseridas aqui -->
+            </div>
+        </div>
+
+        <div id="dashboard" style="display: none;">
+            <h2>Dashboard</h2>
+            <table id="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tarefa</th>
+                        <th>Tempo para Conclusão</th>
+                        <th>Analista</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dados dinâmicos -->
+                </tbody>
+            </table>
+            <div id="total-time" style="margin-top: 10px;">Total de Tempo: 00:00:00</div> <!-- Exibição do Total de Tempo -->
+            <button id="close-dashboard">Fechar</button>
+            <!-- Botões de Exportação -->
+            <button id="generate-pdf" class="btn btn-primary">
+                <i class="fas fa-file-pdf"></i> Gerar Relatório em PDF
+            </button>
+            <button id="generate-excel" class="btn btn-success">
+                <i class="fas fa-table"></i> Gerar Excel
+            </button>
+        </div>
+
+        <!-- Colunas do Kanban -->
+        <div class="board">
+            <div class="column" id="solicitacao">
+                <h2>Não Iniciado</h2>
+                <button class="add-card">+</button>
+            </div>
+            <div class="column" id="aprovacao">
+                <h2>Iniciado</h2>
+                <button class="add-card">+</button>
+            </div>
+            <div class="column" id="processamento">
+                <h2>Em Andamento</h2>
+                <button class="add-card">+</button>
+            </div>
+            <div class="column" id="recebido">
+                <h2>Finalizado</h2>
+                <button class="add-card">+</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>

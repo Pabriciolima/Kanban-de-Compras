@@ -9,17 +9,19 @@ body {
     align-items: center;
     min-height: 100vh;
     flex-direction: column;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 /* Containers principais */
 #login-container, #signup-container, #kanban-container {
     width: 100%;
-    max-width: 1200px; /* Limita a largura máxima */
+    max-width: 1200px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     padding: 30px;
     margin: 10px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 /* Formulários */
@@ -34,7 +36,7 @@ input[type="text"], input[type="password"] {
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
-    transition: border-color 0.3s;
+    transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
 input[type="text"]:focus, input[type="password"]:focus {
@@ -49,7 +51,7 @@ button {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, color 0.3s;
     font-weight: bold;
 }
 
@@ -109,6 +111,7 @@ button.select-analyst:hover {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 1200px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 #dashboard-table {
@@ -119,10 +122,12 @@ button.select-analyst:hover {
 #dashboard-table th, #dashboard-table td {
     padding: 12px;
     border: 1px solid #ddd;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 #dashboard-table th {
     background-color: #007BFF;
+    color: #fff;
 }
 
 #close-dashboard {
@@ -156,6 +161,7 @@ button.select-analyst:hover {
     min-width: 200px;
     max-width: 250px;
     margin-bottom: 20px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .column h2 {
@@ -178,7 +184,7 @@ button.select-analyst:hover {
     width: calc(100% - 20px);
     font-size: 14px;
     cursor: pointer;
-    transition: transform .2s;
+    transition: transform 0.2s, background-color 0.3s, color 0.3s;
 }
 
 .card:hover {
@@ -257,7 +263,7 @@ button.select-analyst:hover {
 
 /* Estilos para os botões de exportação */
 #generate-pdf {
-    background-color: #007BFF; /* Azul padrão */
+    background-color: #007BFF;
     color: white;
     padding: 12px;
     border-radius: 5px;
@@ -270,13 +276,13 @@ button.select-analyst:hover {
 }
 
 #generate-pdf:hover {
-    background-color: #FF0000; /* Vermelho */
-    color: white; /* Texto branco */
+    background-color: #FF0000;
+    color: white;
     transform: scale(1.05);
 }
 
 #generate-excel {
-    background-color: #28A745; /* Verde padrão */
+    background-color: #28A745;
     color: white;
     padding: 12px;
     border-radius: 5px;
@@ -289,14 +295,13 @@ button.select-analyst:hover {
 }
 
 #generate-excel:hover {
-    background-color: #218838; /* Verde mais escuro */
-    color: white; /* Texto branco */
+    background-color: #218838;
+    color: white;
     transform: scale(1.05);
 }
 
 /* Media Queries para dispositivos móveis */
 @media (max-width: 768px) {
-    /* Ajusta a largura dos containers e a disposição das colunas */
     #login-container, #signup-container, #kanban-container {
         padding: 15px;
     }
@@ -321,7 +326,6 @@ button.select-analyst:hover {
         padding: 10px;
     }
 
-    /* Ajusta os botões para ficarem responsivos */
     #generate-pdf, #generate-excel {
         width: 100%;
         padding: 10px;
@@ -336,7 +340,6 @@ button.select-analyst:hover {
 }
 
 @media (max-width: 480px) {
-    /* Ajusta ainda mais para telas menores */
     h1, h2 {
         font-size: 20px;
     }
@@ -354,4 +357,83 @@ button.select-analyst:hover {
         font-size: 14px;
         padding: 10px;
     }
+}
+
+/* Botão de alternância de modo escuro */
+.dark-mode-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #0a72e0;
+    color: rgb(255, 251, 3);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode-toggle:hover {
+    background-color: #021e3b;
+}
+
+/* Estilos para o modo escuro */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode #login-container,
+body.dark-mode #signup-container,
+body.dark-mode #kanban-container,
+body.dark-mode #dashboard {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode input[type="text"],
+body.dark-mode input[type="password"],
+body.dark-mode button,
+body.dark-mode .card,
+body.dark-mode .column {
+    background-color: #333333;
+    color: #ffffff;
+    border: 1px solid #555555;
+}
+
+body.dark-mode button {
+    background-color: #555555;
+    color: #ffffff;
+}
+
+body.dark-mode button:hover {
+    background-color: #777777;
+}
+
+body.dark-mode #dashboard-table th,
+body.dark-mode #dashboard-table td {
+    border: 1px solid #555555;
+}
+
+body.dark-mode .card {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+body.dark-mode .column h2 {
+    background-color: #1f1d1d;
+}
+
+body.dark-mode .dark-mode-toggle {
+    background-color: #555555;
+    color: #ffffff;
+}
+
+body.dark-mode .dark-mode-toggle:hover {
+    background-color: #777777;
 }
