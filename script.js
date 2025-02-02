@@ -315,12 +315,19 @@ function updateDashboard() {
     completedTasks.forEach((task) => {
         const row = document.createElement('tr');
         row.innerHTML = 
-            `<td>${task.id}</td>
-            <td>${task.name}</td>
-            <td>${task.time}</td>
-            <td>${task.analyst}</td>
-            <td><button class="delete-task-btn">Excluir</button></td>`; // Botão de exclusão
-        tbody.appendChild(row);
+        row.innerHTML = `
+        <td>${task.id}</td>
+        <td>${task.name}</td>
+        <td>${task.time}</td>
+        <td>${task.analyst}</td>
+        <td>
+            <button class="delete-task-btn" style="background: none; border: none; cursor: pointer;">
+                <i class="fas fa-trash-alt" style="color: red; font-size: 18px;"></i>
+            </button>
+        </td>
+    `;
+    tbody.appendChild(row);
+    
 
         // Calculando o total de tempo
         const timeParts = task.time.split(':').map(part => parseInt(part));
@@ -389,45 +396,123 @@ function deleteTaskFromReport(taskId) {
     }
 }
 // Alternar o modo escuro
-// Alternar o modo escuro
+// Seleciona o botão de alternância do modo escuro
 const darkModeToggle = document.getElementById('dark-mode-toggle');
-darkModeToggle.addEventListener('click', () => {
+const icon = darkModeToggle.querySelector('i');
+
+// Função para alternar o modo escuro
+function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
-    document.getElementById('login-container').classList.toggle('dark-mode');
-    document.getElementById('signup-container').classList.toggle('dark-mode');
-    document.getElementById('kanban-container').classList.toggle('dark-mode');
-    document.getElementById('dashboard').classList.toggle('dark-mode');
-    document.querySelectorAll('input[type="text"], input[type="password"], button, .card, .column').forEach((element) => {
-        element.classList.toggle('dark-mode');
+    
+    const elementsToToggle = [
+        'login-container',
+        'signup-container',
+        'kanban-container',
+        'dashboard',
+        'footer'
+    ];
+
+    // Adiciona ou remove a classe dark-mode nos elementos necessários
+    elementsToToggle.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.classList.toggle('dark-mode');
+        }
     });
 
-    // Alterna o ícone do botão entre lua e sol
-    const icon = darkModeToggle.querySelector('i');
-    if (document.body.classList.contains('dark-mode')) {
+    document.querySelectorAll('input[type="text"], input[type="password"], button, .card, .column')
+        .forEach(element => element.classList.toggle('dark-mode'));
+
+    // Verifica se o modo escuro está ativado e altera o ícone corretamente
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    icon.classList.toggle('fa-moon', !isDarkMode);
+    icon.classList.toggle('fa-sun', isDarkMode);
+
+    // Salva o estado no localStorage
+    localStorage.setItem('darkMode', isDarkMode);
+}
+
+// Evento de clique para alternar o modo escuro
+darkModeToggle.addEventListener('click', toggleDarkMode);
+
+// Verifica o estado salvo no localStorage ao carregar a página
+window.addEventListener('load', () => {
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        
+        ['login-container', 'signup-container', 'kanban-container', 'dashboard', 'footer']
+            .forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.classList.add('dark-mode');
+                }
+            });
+
+        document.querySelectorAll('input[type="text"], input[type="password"], button, .card, .column')
+            .forEach(element => element.classList.add('dark-mode'));
+
+        // Garante que o ícone seja atualizado corretamente
         icon.classList.remove('fa-moon');
         icon.classList.add('fa-sun');
     } else {
         icon.classList.remove('fa-sun');
         icon.classList.add('fa-moon');
     }
-
-    // Salvar o estado do modo escuro no localStorage
-    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
 });
 
-// Verificar o estado do modo escuro ao carregar a página
-window.addEventListener('load', () => {
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('login-container').classList.add('dark-mode');
-        document.getElementById('signup-container').classList.add('dark-mode');
-        document.getElementById('kanban-container').classList.add('dark-mode');
-        document.getElementById('dashboard').classList.add('dark-mode');
-        document.querySelectorAll('input[type="text"], input[type="password"], button, .card, .column').forEach((element) => {
-            element.classList.add('dark-mode');
+// Função para habilitar o arrasto nos cards em dispositivos móveis
+function enableCardDrag() {
+    const cards = document.querySelectorAll('.card');
+
+    cards.forEach(card => {
+        // Cria uma instância do Hammer para cada card
+        const hammer = new Hammer(card);
+
+        // Habilita o gesto de arrastar (pan)
+        hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+
+        // Evento quando o arrasto começa
+        hammer.on('panstart', function (event) {
+            card.style.transition = 'none'; // Remove a transição durante o arrasto
+            card.classList.add('dragging'); // Adiciona a classe dragging para estilização
         });
-        const icon = darkModeToggle.querySelector('i');
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
-    }
-});
+
+        // Evento durante o arrasto
+        hammer.on('panmove', function (event) {
+            const deltaX = event.deltaX; // Movimento horizontal
+            const deltaY = event.deltaY; // Movimento vertical
+
+            // Aplica o movimento ao card
+            card.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        });
+
+        // Evento quando o arrasto termina
+        hammer.on('panend', function (event) {
+            card.style.transition = 'transform 0.3s ease'; // Restaura a transição
+            card.style.transform = 'translate(0, 0)'; // Retorna o card à posição original
+            card.classList.remove('dragging'); // Remove a classe dragging
+
+            // Verifica se o card foi solto em uma coluna válida
+            const columns = document.querySelectorAll('.column');
+            columns.forEach(column => {
+                column.classList.remove('hovered'); // Remove a classe hovered de todas as colunas
+            });
+
+            // Verifica se o card foi solto em uma coluna
+            const dropTarget = document.elementFromPoint(event.center.x, event.center.y);
+            const targetColumn = dropTarget.closest('.column');
+
+            if (targetColumn) {
+                // Move o card para a coluna de destino
+                targetColumn.insertBefore(card, targetColumn.querySelector('.add-card'));
+                updateCardColor(card, targetColumn); // Atualiza a cor do card conforme a coluna
+                saveCardsToLocalStorage(); // Salva as alterações no localStorage
+            }
+        });
+    });
+}
+
+// Habilita o arrasto dos cards quando a página carregar
+window.addEventListener('load', enableCardDrag);

@@ -23,6 +23,9 @@
 
     <!-- Hammer.js para suporte a gestos touch -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+
+   
+   
 </head>
 <body>
     <!-- Tela de Login -->
@@ -115,37 +118,11 @@
         </div>
     </div>
 
-    <script>
-        // Função para habilitar o arrasto nos cards
-        function enableCardDrag() {
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                const hammer = new Hammer(card);
-                hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL });
-
-                hammer.on('panstart', function (event) {
-                    card.style.transition = 'none'; // Remove a transição durante o arrasto
-                });
-
-                hammer.on('panmove', function (event) {
-                    const deltaX = event.deltaX; // Movimento horizontal
-                    const deltaY = event.deltaY; // Movimento vertical
-
-                    // Aplica o movimento ao card
-                    card.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-                });
-
-                hammer.on('panend', function (event) {
-                    card.style.transition = 'transform 0.3s ease'; // Restaura a transição
-                    card.style.transform = 'translate(0, 0)'; // Retorna o card à posição original
-                });
-            });
-        }
-
-        // Habilita o arrasto dos cards quando a página carregar
-        window.addEventListener('load', enableCardDrag);
-    </script>
-
+    <!-- Footer -->
+    <footer>
+        <i class="fas fa-copyright icon"></i>
+        <p>Todos os direitos reservados © Pabricio Lima 2025</p>
+    </footer>
     <script src="script.js" defer></script>
 </body>
 </html>
