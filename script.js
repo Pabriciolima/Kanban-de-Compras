@@ -173,10 +173,13 @@ function addCard(e) {
     card.addEventListener('dragstart', dragStart);
     card.addEventListener('dragend', dragEnd);
     card.querySelector('.delete-btn').addEventListener('click', () => deleteCard(card));
-    
+
     taskId++; // Incrementa o taskId após adicionar um novo card
     localStorage.setItem('taskId', taskId); // Salva o novo taskId no localStorage
 
+    // Salva a tarefa recém-criada no localStorage
+    saveCardsToLocalStorage();  // Chama a função que salva todas as tarefas no localStorage
+    
     // Lógica para o comportamento do placeholder
     const taskName = card.querySelector('.task-name');
 
@@ -191,9 +194,8 @@ function addCard(e) {
             taskName.textContent = "Digite o nome da tarefa...";
         }
     });
-
-    saveCardsToLocalStorage(); // Salva os cards no localStorage sempre que um novo for adicionado
 }
+
 
 function deleteCard(card) {
     // Confirma a exclusão
@@ -299,6 +301,65 @@ function saveCardsToLocalStorage() {
     }));
     localStorage.setItem('cards', JSON.stringify(cards));
 }
+
+// Função para restaurar os cards do localStorage
+function restoreCardsFromLocalStorage() {
+    cards.forEach(cardData => {
+        const column = document.getElementById(cardData.column);
+        if (column) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('draggable', 'true');
+            card.dataset.id = cardData.id;
+            card.innerHTML = 
+                `<div class="card-header">
+                    <span>${cardData.id}</span>
+                    <button class="delete-btn">X</button>
+                </div>
+                <div class="task-name" contenteditable="true">${cardData.name}</div>
+                <div class="timer">${cardData.time}</div>`;
+            column.insertBefore(card, column.querySelector('.add-card'));
+            card.addEventListener('dragstart', dragStart);
+            card.addEventListener('dragend', dragEnd);
+            card.querySelector('.delete-btn').addEventListener('click', () => deleteCard(card));
+
+            // Restaura o analista, se existir
+            if (cardData.analyst) {
+                const analystSpan = document.createElement('span');
+                analystSpan.classList.add('analyst-name');
+                analystSpan.textContent = cardData.analyst;
+                card.querySelector('.card-header').append( ` - Analista: `, analystSpan);
+            }
+
+            // Restaura o timer, se necessário
+            if (cardData.column === 'aprovacao' && !timers[cardData.id]) {
+                trackCard(card);
+            }
+
+            // Lógica para o comportamento do placeholder
+            const taskName = card.querySelector('.task-name');
+
+            taskName.addEventListener('focus', () => {
+                if (taskName.textContent === "Digite o nome da tarefa...") {
+                    taskName.textContent = "";
+                }
+            });
+
+            taskName.addEventListener('blur', () => {
+                if (taskName.textContent === "") {
+                    taskName.textContent = "Digite o nome da tarefa...";
+                }
+            });
+        }
+    });
+}
+
+
+// Restaura os cards ao carregar a página
+window.addEventListener('load', () => {
+    restoreCardsFromLocalStorage(); // Essa função deve ser chamada aqui para restaurar os cards ao carregar a página
+});
+
 
 // Adicionar evento para abrir o dashboard
 document.getElementById('dashboard-btn').addEventListener('click', () => {
